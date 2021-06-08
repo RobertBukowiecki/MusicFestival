@@ -1,41 +1,48 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const db = require('./../db');
+const db = require("./../db");
 
-
-router.route('/seats').get((req, res) => {
+router.route("/seats").get((req, res) => {
   res.json(db.seats);
 });
 
-router.route('/seats/:id').get((req, res) => {
-  res.json(db.seats.filter(data => data.id == req.params.id));
+router.route("/seats/:id").get((req, res) => {
+  res.json(db.seats.filter((data) => data.id == req.params.id));
 });
 
-
-router.route('/seats').post((req, res) => {
-  const {day, seat, client, email } = req.body;
-  const newSeats = {
-      id: db.seats.length + 1,
-      day, seat, client, email
-  }
-  db.seats.push(newSeats);
-  res.json({ message: 'OK' })
-   
-  if (db.seats.filter(data => (data.day == newSeat.day && data.seat == newSeat.seat)).length > 0) {
-    res.json({ message: "The slot is already taken..." })
+router.route("/seats").post((req, res) => {
+  const { day, seat, client, email } = req.body;
+  const newSeat = {
+    id: db.seats.length + 1,
+    day,
+    seat,
+    client,
+    email,
+  };
+  if (
+    db.seats.filter(
+      (data) => data.day == newSeat.day && data.seat == newSeat.seat
+    ).length > 0
+  ) {
+    res.json({ message: "The slot is already taken..." });
   } else {
     db.seats.push(newSeat);
-    res.json({ message: 'OK' });
+    req.io.emit("seatsUpdated", db.seats);
+    res.json({ message: "OK" });
   }
 });
 
-router.route('/seats/:id').put((req, res) => {
+router.route("/seats/:id").put((req, res) => {
   const { day, seat, client, email } = req.body;
   const id = req.params.id;
   const newSeats = {
-    id, day, seat, client, email
-  }
-  const updateSeats = db.seats.find(data => data.id == id)
+    id,
+    day,
+    seat,
+    client,
+    email,
+  };
+  const updateSeats = db.seats.find((data) => data.id == id);
   const index = db.seats.indexOf(updateSeats);
 
   db.seats[index] = newSeats;
@@ -43,10 +50,10 @@ router.route('/seats/:id').put((req, res) => {
   res.json({ message: "OK" });
 });
 
-router.route('/seats/:id').delete((req, res) => {
+router.route("/seats/:id").delete((req, res) => {
   const id = req.params.id;
 
-  const dataToDelete = db.seats.find(data => data.id = id);
+  const dataToDelete = db.seats.find((data) => (data.id = id));
   const index = db.seats.indexOf(dataToDelete);
   db.seats.splice(index, 1);
 
