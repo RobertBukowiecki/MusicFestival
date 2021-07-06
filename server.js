@@ -3,6 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const socket = require("socket.io");
 const mongoose = require("mongoose");
+const app = express();
 
 mongoose.connect(
   "mongodb+srv://robert:adminadmin@cluster0.wgcui.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
@@ -18,8 +19,6 @@ db.once("open", () => {
   console.log("Connected to the database");
 });
 db.on("error", (err) => console.log("Error " + err));
-
-const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -63,3 +62,5 @@ const io = socket(server, { cors: { origin: "*" } });
 io.on("connection", (socket) => {
   console.log("New socket!");
 });
+
+module.exports = server;

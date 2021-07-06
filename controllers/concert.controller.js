@@ -10,9 +10,18 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const data = await Concert.findById(req.params.id);
-    if (!data) res.status(404).json({ message: "Not found" });
-    else res.json(data);
+    const concert = await Concert.find();
+    const seats = await Seat.find();
+
+    const concerts = concert.map((data) => {
+      const tickets = seats.filter((seat) => seat.day === data.day);
+      const freeTickets = 50 - tickets.length;
+
+      const { _id, genre, performer, day, price, image } = data;
+      const output = { freeTickets, _id, genre, performer, day, price, image };
+      return output;
+    });
+    res.json(concerts);
   } catch (err) {
     res.status(500).json({ message: err });
   }
