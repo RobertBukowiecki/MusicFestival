@@ -1,14 +1,7 @@
 const Concert = require("../models/concert.model");
+const Seat = require("../models/seat.model");
 
 exports.getAll = async (req, res) => {
-  try {
-    res.json(await Concert.find());
-  } catch (err) {
-    res.status(500).json({ message: err });
-  }
-};
-
-exports.getById = async (req, res) => {
   try {
     const concert = await Concert.find();
     const seats = await Seat.find();
@@ -22,6 +15,16 @@ exports.getById = async (req, res) => {
       return output;
     });
     res.json(concerts);
+  } catch (err) {
+    res.status(500).json({ message: err });
+  }
+};
+
+exports.getById = async (req, res) => {
+  try {
+    const data = await Concert.findById(req.params.id);
+    if (!data) res.status(404).json({ message: "Not found" });
+    else res.json(data);
   } catch (err) {
     res.status(500).json({ message: err });
   }
