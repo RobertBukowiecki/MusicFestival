@@ -3,10 +3,11 @@ const cors = require("cors");
 const path = require("path");
 const socket = require("socket.io");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
 const app = express();
 
 mongoose.connect(
-  `mongodb+srv://robert:${process.env.test}@cluster0.wgcui.mongodb.net/NewWaveDB?retryWrites=true&w=majority`,
+  "mongodb+srv://robert:adminadmin@cluster0.wgcui.mongodb.net/NewWaveDB?retryWrites=true&w=majority",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
   req.io = io;
   next();
 });
+app.use(helmet());
 
 const concertsRoutes = require("./routes/concerts.routes.js");
 const testimonialsRoutes = require("./routes/testimonials.routes");
